@@ -1,26 +1,34 @@
-require("dotenv").config();
-const express = require('express');
-const router = express.Router();
-const userController = require('../controllers/userController');
-const authMiddleware = require('../utils/auth');
-
-const secret = process.env.JWT_SECRET;
-const expiration = '2h';
+const router = require('express').Router();
+const { User } = require('../models/User');
+const { signToken } = require('../utils/auth');
  
-
-
-router.post('/api/users/register', userController.createUser);
-router.post('/api/users/login', userController.userLogin);
-router.get('/api/users/me', authMiddleware, (req, res) => {
-  if (!req.user) {
-    return res.status(401).json({ message: 'You must be logged in to see this!' });
+// POST /api/users/register - Create a new user
+router.post('api/users/register', async (req, res) => {
+  try {
+    const user = await User.create(req.body);
+    const token = signToken(user);
+    res.status(201).json({ token, user });
+  } catch (err) {
+    res.status(400).json(err);
+  }
+});
+ 
+// POST /api/users/login - Authenticate a user and return a token
+router.post('api/users/login', async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+ 
+  if (!user) {
+    return res.status(400).json({ message: "Can't find this user" });
   }
  
-  // Find user data and send it back
-  User.findById(req.user._id)
-    .select('-password')
-    .then(user => res.json(user))
-    .catch(err => res.status(500).json(err));
+  const correctPw = await user.isCorrectPassword(req.body.password);
+ 
+  if (!correctPw) {
+    return res.status(400).json({ message: 'Wrong password!' });
+  }
+ 
+  const token = signToken(user);
+  res.json({ token, user });
 });
-
+ 
 module.exports = router;
