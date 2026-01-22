@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { Note } = require('../models/Note');
+const Note = require('../models/Note');
 const { authMiddleware } = require('../utils/auth');
 
 // Apply authMiddleware to all routes in this file
@@ -25,14 +25,16 @@ router.get('/', authMiddleware, async (req, res) => {
 // POST /api/notes - Create a new note
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    const { title, content } = req.body;
+    // const { title, content } = req.body;
+    console.log("made it this far")
     const note = await Note.create({
-      ...req.body,
+      // ...req.body,
       // The user ID needs to be added here
       user: req.user._id,
-      title,
-      content
+      title: req.body.title,
+      content: req.body.content
     });
+    console.log(note);
     res.status(201).json(note);
 
   //   const { title, content } = req.body;
