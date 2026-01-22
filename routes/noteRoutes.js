@@ -1,13 +1,13 @@
 const router = require('express').Router();
-const { Note } = require('../../models/Note');
-const { authMiddleware } = require('../../utils/auth');
+const { Note } = require('../models/Note');
+const { authMiddleware } = require('../utils/auth');
 
 // Apply authMiddleware to all routes in this file
 router.use(authMiddleware);
 
 // GET /api/notes - Get all notes for the logged-in user
 // THIS IS THE ROUTE THAT CURRENTLY HAS THE FLAW
-router.get('/api/notes', authMiddleware, async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
   // This currently finds all notes in the database.
   // It should only find notes owned by the logged in user.
   try {
@@ -23,7 +23,7 @@ router.get('/api/notes', authMiddleware, async (req, res) => {
 });
 
 // POST /api/notes - Create a new note
-router.post('/api/notes', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
   try {
     const { title, content } = req.body;
     const note = await Note.create({
@@ -34,13 +34,18 @@ router.post('/api/notes', authMiddleware, async (req, res) => {
       content
     });
     res.status(201).json(note);
+
+  //   const { title, content } = req.body;
+
+  //   const newPost = await User.create({ title, content });
+  //   res.status(201).json({ message: 'Post created successfully', newPost });
   } catch (err) {
     res.status(400).json(err);
   }
 });
 
 // PUT /api/notes/:id - Update a note
-router.put('/api/notes/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     // This needs an authorization check
     if (!req.user) {
@@ -57,7 +62,7 @@ router.put('/api/notes/:id', async (req, res) => {
 });
 
 // DELETE /api/notes/:id - Delete a note
-router.delete('api/notes/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     // This needs an authorization check
     if (!req.user) {
