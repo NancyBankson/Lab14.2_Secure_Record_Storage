@@ -15,7 +15,7 @@ router.get('/', authMiddleware, async (req, res) => {
       return res.status(401).json({ message: 'You must be logged in to see this!' });
     }
 
-    const notes = await Note.find({});
+    const notes = await Note.find({ user: req.user });
     res.json(notes);
   } catch (err) {
     res.status(500).json(err);
