@@ -10,6 +10,6 @@ router.get('/', notesController.findNote);
 router.post('/', notesController.createNote);
 router.put('/:id', notesController.editNote);
 router.delete('/:id', notesController.deleteNote);
-router.post('/', notesController.findOneNote);
+router.get('/:id', notesController.findOneNote);
 
 module.exports = router;

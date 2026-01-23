@@ -1,5 +1,4 @@
 const Note = require("../models/Note");
-// const jwt = require('jsonwebtoken');
 
 // GET /api/notes - Get all notes for the logged-in user
 async function findNote(req, res) {
@@ -32,36 +31,48 @@ async function createNote(req, res) {
 
 // PUT /api/notes/:id - Update a note
 async function editNote(req, res) {
-  try {
-    // This needs an authorization check
-    if (!req.user) {
-      return res.status(403).json({ message: "User is not authorized to update this note." });
+    try {
+        // This needs an authorization check
+        if (!req.user) {
+            return res.status(403).json({ message: "User is not authorized to update this note." });
+        } else {
+            const record = await Note.findById(req.params.id);
+            if (record.user.toString() !== req.user._id.toString()) {
+                return res.status(403).json({ message: 'User not authorized!' });
+            } else {
+                const note = await Note.findByIdAndUpdate(req.params.id, req.body, { new: true });
+                if (!note) {
+                    return res.status(404).json({ message: 'No note found with this id!' });
+                }
+                res.json(note);
+            }
+        }
+    } catch (err) {
+        res.status(500).json(err);
     }
-    const note = await Note.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!note) {
-      return res.status(404).json({ message: 'No note found with this id!' });
-    }
-    res.json(note);
-  } catch (err) {
-    res.status(500).json(err);
-  }
 }
 
 // DELETE /api/notes/:id - Delete a note
 async function deleteNote(req, res) {
-  try {
-    // This needs an authorization check
-    if (!req.user) {
-      return res.status(403).json({ message: "User is not authorized to update this note." });
+    try {
+        // This needs an authorization check
+        if (!req.user) {
+            return res.status(403).json({ message: "User is not authorized to update this note." });
+        } else {
+            const record = await Note.findById(req.params.id);
+            if (record.user.toString() !== req.user._id.toString()) {
+                return res.status(403).json({ message: 'User not authorized!' });
+            } else {
+                const note = await Note.findByIdAndDelete(req.params.id);
+                if (!note) {
+                    return res.status(404).json({ message: 'No note found with this id!' });
+                }
+                res.json({ message: 'Note deleted!' });
+            }
+        }
+    } catch (err) {
+        res.status(500).json(err);
     }
-    const note = await Note.findByIdAndDelete(req.params.id);
-    if (!note) {
-      return res.status(404).json({ message: 'No note found with this id!' });
-    }
-    res.json({ message: 'Note deleted!' });
-  } catch (err) {
-    res.status(500).json(err);
-  }
 }
 
 // Find single note by Id
@@ -69,11 +80,18 @@ async function findOneNote(req, res) {
     try {
         if (!req.user) {
             return res.status(401).json({ message: 'You must be logged in to see this!' });
+        } else {
+            const record = await Note.findById(req.params.id);
+            if (record.user.toString() !== req.user._id.toString()) {
+                return res.status(403).json({ message: 'User not authorized!' });
+            } else {
+                const notes = await Note.findById(req.params.id);
+                if (notes) {
+                    res.json(notes);
+                }
+            }
         }
-        const notes = await Note.findById(req.params.id);
-        if (notes) {
-            res.json(notes);
-        }              
+
     } catch (err) {
         res.status(500).json(err);
     }
