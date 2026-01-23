@@ -1,9 +1,3 @@
-// const mongoose = require('mongoose');
-// require("dotenv").config();
-
-// mongoose.connect(process.env.MONGO_URI);
- 
-// module.exports = mongoose.connection;
 const mongoose = require('mongoose');
 require('dotenv').config();
 const PORT = process.env.PORT || 3001;

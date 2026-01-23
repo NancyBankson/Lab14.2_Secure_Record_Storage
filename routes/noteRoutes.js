@@ -36,11 +36,6 @@ router.post('/', authMiddleware, async (req, res) => {
     });
     console.log(note);
     res.status(201).json(note);
-
-  //   const { title, content } = req.body;
-
-  //   const newPost = await User.create({ title, content });
-  //   res.status(201).json({ message: 'Post created successfully', newPost });
   } catch (err) {
     res.status(400).json(err);
   }

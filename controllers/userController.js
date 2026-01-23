@@ -1,6 +1,5 @@
 const User = require("../models/User");
 const jwt = require('jsonwebtoken');
-const signToken = require('../utils/auth')
 
 async function createUser(req, res) {
     try {
@@ -15,13 +14,6 @@ async function createUser(req, res) {
         console.error("Error creating user:", error);
         res.status(400).json({ error: "Failed to create user.", details: error.message });
     }
-    // try {
-    //     const user = await User.create(req.body);
-    //     const token = signToken(user);
-    //     res.status(201).json({ token, user });
-    // } catch (err) {
-    //     res.status(400).json(err);
-    // }
 }
 
 async function userLogin(req, res) {
@@ -64,20 +56,6 @@ async function userLogin(req, res) {
         console.error("Authentication error:", error);
         res.status(400).json({ error: "Failed to authenticate user.", details: error.message });
     }
-    // const user = await User.findOne({ email: req.body.email });
-
-    // if (!user) {
-    //     return res.status(400).json({ message: "Can't find this user" });
-    // }
-
-    // const correctPw = await user.isCorrectPassword(req.body.password);
-
-    // if (!correctPw) {
-    //     return res.status(400).json({ message: 'Wrong password!' });
-    // }
-
-    // const token = signToken(user);
-    // res.json({ token, user });
 }
 
 module.exports = {
